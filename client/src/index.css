@@ -25,9 +25,38 @@ body {
     'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--background);
+  color: var(--textColor);
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+img {
+  max-width: 100%;
+}
+*,
+*::before,
+*:after {
+  box-sizing: border-box;
+  font-family: 'Noto Sans';
+  font-size: 16px;
+}
+:root {
+  --primaryColor: #bdbdbd;
+  --darkText: #333333;
+  --grayishText: #828282;
+  --accentColor: #2f80ed;
+  --background: #ffffff;
+  --textColor: #333333;
+  --brSmall: 8px;
+  --brLarge: 24px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #333333;
+    --textColor: #e0e0e0;
+    --darkText: #e0e0e0;
+  }
 }

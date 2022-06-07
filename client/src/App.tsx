@@ -1,13 +1,14 @@
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
+import Credentials from './Components/Credentials/Credentials';
+import { Action } from './types';
 
 function App() {
   return (
     <div className="App">
-      Welcome to your React App
       <Routes>
-        <Route path="/" element={<div>This is home signup</div>} />
-        <Route path="/login" element={<div>Welcome to login </div>} />
+        <Route path="/" element={<Credentials />} />
+        <Route path="/login" element={<Credentials action={Action.LOGIN} />} />
       </Routes>
     </div>
   );

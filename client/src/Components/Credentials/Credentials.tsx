@@ -5,7 +5,7 @@ import styles from './Credentials.module.css';
 import { MdMail, MdLock } from 'react-icons/md';
 import { AiOutlineGoogle } from 'react-icons/ai';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Action, IUser } from '../../types';
+import { Action, ENV, IUser } from '../../types';
 import useAuth from '../../hooks/useAuth';
 
 function Credentials({ action = Action.SIGNUP }: { action?: Action }) {
@@ -66,6 +66,8 @@ function Credentials({ action = Action.SIGNUP }: { action?: Action }) {
       [e.target.name]: e.target.value,
     });
   };
+
+  console.log(ENV.SERVER);
   return (
     <div className={`${styles.main__wrapper} `}>
       <main className={styles.main}>
@@ -125,7 +127,12 @@ function Credentials({ action = Action.SIGNUP }: { action?: Action }) {
           <p className={styles.p__info}> or continue with a social profile</p>
           <ul className={styles.social__list}>
             <li className={styles.social__list_item}>
-              <button className={styles.social__list_btn}>
+              <button
+                className={styles.social__list_btn}
+                onClick={() => {
+                  window.open('http://localhost:8000/login/google', '_self');
+                }}
+              >
                 <AiOutlineGoogle focusable={false} aria-hidden='true' />
               </button>
             </li>

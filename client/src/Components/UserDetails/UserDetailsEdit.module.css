@@ -2,6 +2,7 @@
   padding: 0 5%;
   margin: 0 auto;
   margin-bottom: 2rem;
+  max-width: 845px;
 }
 
 .link__back {
@@ -58,4 +59,16 @@
   border-radius: var(--brSmall);
   padding: 0.5rem 1.5rem;
   justify-self: start;
+}
+@media (min-width: 450px) {
+  .user__details_wrapper {
+    border: 1px solid var(--lightGray);
+    border-radius: var(--br);
+    padding-left: 45px;
+    padding-bottom: 42px;
+    margin-top: 1rem;
+  }
+  .form {
+    width: 62%;
+  }
 }

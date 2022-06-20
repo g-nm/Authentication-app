@@ -8,12 +8,14 @@ import UserDetailsNav from './Components/UserDetails/UserDetailsNav';
 import RequireAuth from './Components/RequireAuth/RequireAuth';
 import UserDetails from './Components/UserDetails/UserDetails';
 import UserDetailsEdit from './Components/UserDetails/UserDetailsEdit';
+import { ReactQueryDevtools } from 'react-query/devtools';
 
 const queryClient = new QueryClient();
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools initialIsOpen={true} />
       <AuthServiceProvider>
         <main className='App'>
           <Routes>

@@ -1,7 +1,16 @@
 import { Link } from 'react-router-dom';
+import { useGetDetails } from '../../hooks/useGetDetails';
+import avatar from '../../assets/avatar.svg';
+
 import styles from './UserDetails.module.css';
 
 const UserDetails = () => {
+  const { data, isLoading } = useGetDetails();
+
+  if (!data || isLoading) {
+    return <div>Loading.....</div>;
+  }
+
   return (
     <main className={styles.main}>
       <div className={styles.header}>
@@ -28,34 +37,39 @@ const UserDetails = () => {
             <div className={styles.user__details_wrapper}>
               <p className={styles.user__details_title}>PHOTO</p>
               <div className={styles.user__details_info}>
-                <img src='' alt='' width='72px' height='72px' />
+                <img
+                  src={data.picture || avatar}
+                  alt=''
+                  width='72px'
+                  height='72px'
+                />
               </div>
             </div>
           </li>
           <li className={styles.user__details_item}>
             <div className={styles.user__details_wrapper}>
               <p className={styles.user__details_title}>NAME</p>
-              <p className={styles.user__details_info}>Xanthe Neal</p>
+              <p className={styles.user__details_info}>{data.name}</p>
             </div>
           </li>
           <li className={styles.user__details_item}>
             <div className={styles.user__details_wrapper}>
               <p className={styles.user__details_title}>BIO</p>
               <p className={`${styles.bio} ${styles.user__details_info}`}>
-                I am a software developer and a big fan of tech what about you?
+                {data.bio}
               </p>
             </div>
           </li>
           <li className={styles.user__details_item}>
             <div className={styles.user__details_wrapper}>
               <p className={styles.user__details_title}>PHONE</p>
-              <p className={styles.user__details_info}>23444232323</p>
+              <p className={styles.user__details_info}>{data.phone}</p>
             </div>
           </li>
           <li className={styles.user__details_item}>
             <div className={styles.user__details_wrapper}>
               <p className={styles.user__details_title}>EMAIL</p>
-              <p className={styles.user__details_info}>gnm@mail.com</p>
+              <p className={styles.user__details_info}>{data.email}</p>
             </div>
           </li>
           <li className={styles.user__details_item}>

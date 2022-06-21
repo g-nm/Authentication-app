@@ -5,7 +5,7 @@ import styles from './Credentials.module.css';
 import { MdMail, MdLock } from 'react-icons/md';
 import { AiOutlineGoogle } from 'react-icons/ai';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Action, ENV, IUser } from '../../types';
+import { Action, IUser } from '../../types';
 import useAuth from '../../hooks/useAuth';
 
 function Credentials({ action = Action.SIGNUP }: { action?: Action }) {
@@ -67,7 +67,6 @@ function Credentials({ action = Action.SIGNUP }: { action?: Action }) {
     });
   };
 
-  console.log(ENV.SERVER);
   return (
     <div className={`${styles.main__wrapper} `}>
       <main className={styles.main}>

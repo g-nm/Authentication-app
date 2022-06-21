@@ -40,24 +40,21 @@ const googleStrategy = new GoogleStrategy(
     callbackURL: '/login/google/callback',
     scope: ['email', 'profile'],
   },
-  (_accessToken, _refreshToken, profile, done) => {
+  async (_accessToken, _refreshToken, profile, done) => {
     const selectquery = 'SELECT * FROM users WHERE provider=$1 AND user_id=$2';
     const values = ['google', profile.id];
-    postgresPool
-      .query(selectquery, values)
-      .then((result) => {
-        if (result.rows.length === 0) {
-          insertUserFromProvider(profile, ProviderList.GOOGLE)
-            .then((user) => {
-              done(null, user);
-            })
-            .catch((error) => {
-              done(error);
-            });
-        }
-        done(null, result.rows[0]);
-      })
-      .catch((error) => done(error));
+    console.log(profile);
+    try {
+      const result = await postgresPool.query(selectquery, values);
+      console.log(result.rows);
+      if (result.rows.length === 0) {
+        const user = await insertUserFromProvider(profile, ProviderList.GOOGLE);
+        return done(null, user);
+      }
+      return done(null, result.rows[0]);
+    } catch (error) {
+      return done(error as Error);
+    }
   }
 );
 

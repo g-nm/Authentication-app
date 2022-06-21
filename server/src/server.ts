@@ -17,7 +17,7 @@ dotenv.config();
 const app: Express = express();
 const PORT = process.env.PORT || 8000;
 const storeSession = pgsession(session);
-require('source-map-support').install();
+// require('source-map-support').install();
 
 app.use(
   cors({
@@ -73,16 +73,24 @@ app.post('/signup', async (req: Request, res: Response, next) => {
   }
 });
 
+app.get('/login/failed', (req: Request, res: Response) => {
+  res.status(401).json({
+    success: false,
+    message: 'failure',
+  });
+});
+
 app.get(
   '/login/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
+  passport.authenticate('google', {
+    scope: ['profile', 'email'],
+  })
 );
 
 app.get(
   '/login/google/callback',
   passport.authenticate('google', {
-    failureRedirect: process.env.CLIENT_URL,
-
+    failureRedirect: 'login/failed',
     successRedirect: `${process.env.CLIENT_URL}/details`,
   })
 );
@@ -122,6 +130,7 @@ app.put('/details', isRequestAuthenticated, (req: Request, res: Response) => {
   res.status(200).send('Some user details would be updated');
 });
 app.get('/auth', isRequestAuthenticated, (req: Request, res: Response) => {
+  console.log('I got run ');
   res.sendStatus(200);
 });
 app.post('/signout', isRequestAuthenticated, (req: Request, res: Response) => {
@@ -141,7 +150,8 @@ const errorHandler: ErrorRequestHandler = (
   res: Response
 ) => {
   console.error(err.stack);
-  res.status(500).send('Something broke!');
+  res.status(500);
+  res.send('Something broke!');
 };
 app.use(errorHandler);
 

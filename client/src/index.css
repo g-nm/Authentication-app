@@ -61,6 +61,8 @@ img {
   --background: #ffffff;
   --textColor: #333333;
   --lightGray: #e0e0e0;
+  --subNavLink: #4f4f4f;
+  --subNavLinkFocus: #f2f2f2;
   --brSmall: 8px;
   --br: 12px;
   --brLarge: 24px;
@@ -70,5 +72,7 @@ img {
     --background: #333333;
     --textColor: #e0e0e0;
     --darkText: #e0e0e0;
+    --subNavLink: #f2f2f2;
+    --subNavLinkFocus: #4f4f4f;
   }
 }

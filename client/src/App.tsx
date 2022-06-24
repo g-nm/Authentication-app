@@ -22,7 +22,7 @@ function App() {
             <Route path='/' element={<Credentials />} />
             <Route
               path='/login'
-              element={<Credentials action={Action.LOGIN} />}
+              element={<Credentials action={Action.LOGIN} key={Action.LOGIN} />}
             />
             <Route
               path='/details'

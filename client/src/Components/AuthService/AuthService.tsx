@@ -4,6 +4,7 @@ import React from 'react';
 import { AuthContextType, IUser } from '../../types';
 import { useMutation } from 'react-query';
 import { axiosInstance } from '../../scripts/axiosInstance';
+import { AxiosError } from 'axios';
 
 export const AuthContext = createContext<AuthContextType>(null!);
 

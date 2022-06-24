@@ -26,3 +26,6 @@ export interface IUserDetails {
 export enum ENV {
   SERVER = server,
 }
+export type LocationState = {
+  from: Location;
+};

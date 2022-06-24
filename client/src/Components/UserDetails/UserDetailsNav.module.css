@@ -4,4 +4,50 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 3rem;
+  position: relative;
+}
+.btn__navigation {
+  background-color: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+}
+.btn__image {
+  border-radius: var(--brSmall);
+}
+.nav__username {
+  color: var(--textColor);
+}
+.nav__subNav {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  border: 1px solid var(--lightGray);
+  border-radius: var(--br);
+  min-width: 188px;
+  background-color: var(--background);
+}
+.subNav__list {
+  padding: 0 calc(1rem - 4px);
+  list-style: none;
+}
+
+.subNav__link {
+  text-decoration: none;
+  color: var(--subNavLink);
+  display: grid;
+  grid-template-rows: 1fr;
+  align-items: center;
+  grid-auto-flow: column;
+  grid-template-columns: auto 1fr;
+  gap: calc(1rem - 4px);
+  padding: 0.625em 0 0.75em 0.8em;
+  font-size: 12px;
+}
+
+.subNav__item:focus-within {
+  background-color: var(--subNavLinkFocus);
+}
+.subNav__link span {
+  font-size: 12px;
 }

@@ -1,48 +1,28 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import devchallenges_light from '../../assets/devchallenges-light.svg';
 import devchallenges_dark from '../../assets/devchallenges.svg';
 import styles from './Credentials.module.css';
-import { MdMail, MdLock } from 'react-icons/md';
+import { MdMail, MdLock, MdErrorOutline } from 'react-icons/md';
 import { AiOutlineGoogle } from 'react-icons/ai';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Action, IUser } from '../../types';
+import { Action, IUser, LocationState } from '../../types';
 import useAuth from '../../hooks/useAuth';
+import useMediaMatch from '../../hooks/useMediaMatch';
+import { AxiosError } from 'axios';
 
 function Credentials({ action = Action.SIGNUP }: { action?: Action }) {
   const isSignUp = action === Action.SIGNUP;
   const ImageRef = useRef<HTMLImageElement>(null);
-  const isDark = useMemo(() => matchMedia('(prefers-color-scheme:dark)'), []);
-  useEffect(() => {
-    const callOnChange = (e: MediaQueryListEvent) => {
-      if (!e.matches && ImageRef.current) {
-        ImageRef.current.src = devchallenges_dark;
-        return;
-      }
-      if (ImageRef.current) {
-        ImageRef.current.src = devchallenges_light;
-        return;
-      }
-    };
-    isDark.addEventListener('change', callOnChange);
-
-    return () => {
-      isDark.removeEventListener('change', callOnChange, true);
-    };
-  }, [isDark]);
+  const [error, setError] = useState<string>('');
   const [userCredentials, setUserCredentials] = useState<IUser>({
     email: '',
     password: '',
   });
   const navigate = useNavigate();
-
   const location = useLocation();
-
-  type LocationState = {
-    from: Location;
-  };
-  const state = location.state as LocationState;
-
+  const isDark = useMediaMatch();
   const { login, signup } = useAuth();
+  const state = location.state as LocationState;
 
   const handleFormSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,12 +30,20 @@ function Credentials({ action = Action.SIGNUP }: { action?: Action }) {
       return signup(userCredentials, (error) => {
         if (!error) {
           navigate('/details', {});
+          return;
+        }
+        if (error instanceof AxiosError) {
+          setError(error.response?.data);
         }
       });
     } else {
       return login(userCredentials, (error) => {
         if (!error) {
           navigate(state?.from || '/details', { replace: true });
+          return;
+        }
+        if (error instanceof AxiosError) {
+          setError(error.response?.data);
         }
       });
     }
@@ -73,7 +61,7 @@ function Credentials({ action = Action.SIGNUP }: { action?: Action }) {
         <div className={styles.main__content}>
           <div className={styles.logo__wrapper}>
             <img
-              src={isDark.matches ? devchallenges_light : devchallenges_dark}
+              src={isDark ? devchallenges_light : devchallenges_dark}
               alt='Dev Challenges'
               ref={ImageRef}
             />
@@ -122,6 +110,13 @@ function Credentials({ action = Action.SIGNUP }: { action?: Action }) {
             <button className={styles.btn__submit}>
               {isSignUp ? 'Start Coding now' : ' Login'}
             </button>
+            <div className={styles.alert} aria-live='polite'>
+              {error && (
+                <>
+                  <MdErrorOutline /> <span>{error}</span>
+                </>
+              )}
+            </div>
           </form>
           <p className={styles.p__info}> or continue with a social profile</p>
           <ul className={styles.social__list}>

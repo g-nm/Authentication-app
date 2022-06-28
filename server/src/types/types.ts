@@ -18,7 +18,7 @@ export interface IUserDetails {
   phone: string;
   bio: string;
   name: string;
-  picture: string;
+  picture?: string;
 }
 export interface IUpdateUserDetails extends ISignUp, IUserDetails {
   user_id: string;

@@ -11,7 +11,7 @@ const UserInputForm = ({ data }: { data: IUserDetails }) => {
     phone: data.phone || '',
     email: data.email,
     password: '',
-    image: data.picture || '',
+    picture: '',
   });
   const [isUrlChecked, setUrlChecked] = useState<boolean>(false);
   const [imageError, setImageError] = useState('');
@@ -29,8 +29,12 @@ const UserInputForm = ({ data }: { data: IUserDetails }) => {
   });
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUrlChecked(e.target.checked);
+    setUrlChecked(() => e.target.checked);
+    if (!e.target.checked) {
+      setImageError('');
+    }
     if (!imageRef.current) return;
+
     // if (isUrlChecked) URL.revokeObjectURL(imageRef.current.src);
   };
 
@@ -49,7 +53,7 @@ const UserInputForm = ({ data }: { data: IUserDetails }) => {
     const inputName = e.target.name;
     const value = e.target.value;
     setFormInput({ ...formInput, [inputName]: value });
-    if (inputName === 'image') {
+    if (inputName === 'picture') {
       if (!imageRefIsImageValid.current) return;
       imageRefIsImageValid.current.src = value;
     }
@@ -64,7 +68,7 @@ const UserInputForm = ({ data }: { data: IUserDetails }) => {
     const formdata = new FormData();
 
     if (!isUrlChecked && fileRef.current?.files) {
-      formdata.append('image', fileRef.current?.files[0] || '');
+      formdata.append('picture', fileRef.current?.files[0] || '');
     }
     for (const [key, value] of Object.entries(formInput)) {
       if (!formdata.has(key)) {
@@ -82,15 +86,15 @@ const UserInputForm = ({ data }: { data: IUserDetails }) => {
     <form className={styles.form} onSubmit={handleFormSubmit}>
       <div className={styles.input__file_wrapper}>
         <img
-          src={data.picture || avatar}
+          src=''
           alt=''
           width='72px'
           height='72px'
           ref={imageRefIsImageValid}
           onError={(e) => {
             console.log(e);
-            console.log(formInput.image);
-            if (!formInput.image) {
+            console.log(formInput.picture);
+            if (!formInput.picture) {
               setImageError('');
               return;
             }
@@ -127,12 +131,13 @@ const UserInputForm = ({ data }: { data: IUserDetails }) => {
               <div>Image Url</div>
               <input
                 type='url'
-                name='image'
+                name='picture'
                 placeholder='https://www.myimage.png'
                 className={styles.input}
-                value={formInput.image}
+                value={formInput.picture}
                 onChange={handleChange}
                 aria-describedby='urlAlert'
+                ref={urlRef}
               />
             </label>
             <div id='urlAlert' aria-live='assertive' className={styles.alert}>

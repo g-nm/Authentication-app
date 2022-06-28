@@ -4,6 +4,7 @@ import { selectIfEmailExist } from './select';
 import { hashPassword } from '../scripts/password';
 import { IInsertUser, ISignUp, ProviderList } from '../types/types';
 import { Profile } from 'passport-google-oauth20';
+import { AppError } from '../scripts/error';
 
 export const InsertUser = async (
   user: ISignUp,
@@ -15,7 +16,7 @@ export const InsertUser = async (
   try {
     const isEmailUsed = await selectIfEmailExist(user.email, pool);
     if (isEmailUsed) {
-      throw Error('User already exists');
+      throw new AppError('User already exists');
     }
 
     const hashedPassword = await hashPassword(user.password);
@@ -44,12 +45,12 @@ export const InsertUserFromProvider = async (
 ): Promise<IInsertUser> => {
   try {
     if (!profile.emails) {
-      throw new Error('No email Shared');
+      throw new AppError('No email Shared');
     }
     const email = profile.emails[0].value;
     const isEmailUsed = await selectIfEmailExist(email, pool);
     if (isEmailUsed) {
-      throw Error('User already exists');
+      throw new AppError('User already exists');
     }
     const inserQueryText =
       'INSERT INTO users(user_id,email,password,created_on,last_login,provider) VALUES($1,$2,$3,NOW(),NOW(),$4) RETURNING *';

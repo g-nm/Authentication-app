@@ -1,4 +1,4 @@
 node_modules
 dist
-react-auth.json
 .env
+fly.toml

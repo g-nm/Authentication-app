@@ -11,13 +11,19 @@ import session from 'express-session';
 import pgsession from 'connect-pg-simple';
 import postgresPool from './config/postgresdb';
 import passport from 'passport';
+
 import { isRequestAuthenticated } from './middleware/AuthMiddleware';
-import { insertUser, selectUserDetails } from './db/index';
+import { insertUser, selectUserDetails, UpdateUser } from './db/index';
+import { AppError } from './scripts/error';
+
 dotenv.config();
+
 const app: Express = express();
 const PORT = process.env.PORT || 8000;
 const storeSession = pgsession(session);
-// require('source-map-support').install();
+if (process.env.NODE_ENV === 'development') {
+  require('source-map-support').install();
+}
 
 app.use(
   cors({
@@ -25,6 +31,7 @@ app.use(
     credentials: true,
   })
 );
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
@@ -47,6 +54,8 @@ app.use(
 );
 
 import './config/passport';
+import { handleFormData } from './middleware/HandleFiles';
+import { createUploadFolder } from './scripts/upload';
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -68,16 +77,16 @@ app.post('/signup', async (req: Request, res: Response, next) => {
     });
     return;
   } catch (error) {
-    // console.log(error);
+    if (error instanceof AppError) {
+      res.status(400).send('Incorrect Credentials');
+      return;
+    }
     next(error);
   }
 });
 
 app.get('/login/failed', (req: Request, res: Response) => {
-  res.status(401).json({
-    success: false,
-    message: 'failure',
-  });
+  res.status(401).send('Incorrect Credentials');
 });
 
 app.get(
@@ -126,11 +135,28 @@ app.get(
   }
 );
 
-app.put('/details', isRequestAuthenticated, (req: Request, res: Response) => {
-  res.status(200).send('Some user details would be updated');
-});
+app.put(
+  '/details',
+  isRequestAuthenticated,
+  handleFormData,
+  async (req: Request, res: Response, next) => {
+    console.log('got to request');
+    try {
+      const result = await UpdateUser(res.locals.user);
+      console.log('Result of update ', result);
+    } catch (error) {
+      console.log('error before response', error);
+      if (error instanceof AppError) {
+        res.status(400);
+        return;
+      }
+      next(error);
+      return;
+    }
+    res.status(200).send('Some user details would be updated');
+  }
+);
 app.get('/auth', isRequestAuthenticated, (req: Request, res: Response) => {
-  console.log('I got run ');
   res.sendStatus(200);
 });
 app.post('/signout', isRequestAuthenticated, (req: Request, res: Response) => {
@@ -143,43 +169,27 @@ app.post('/signout', isRequestAuthenticated, (req: Request, res: Response) => {
     console.log(err);
   });
 });
-
+app.use(express.static(__dirname + '/uploads'));
 const errorHandler: ErrorRequestHandler = (
   err,
   req: Request,
-  res: Response
+  res: Response,
+  next
 ) => {
-  console.error(err.stack);
-  res.status(500);
-  res.send('Something broke!');
+  if (err instanceof AppError) {
+    res.status(500);
+    res.send(err.message);
+    return;
+  }
+  next(err);
 };
 app.use(errorHandler);
 
-//no route match
 app.use((req: Request, res: Response) => {
   res.status(404).send('Not Found');
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  await createUploadFolder();
   console.log(`Server is listening on port ${PORT}`);
 });
-
-// App structure
-/* 
-1. There will be a sign up route DONE
-    - It will add the user to the database and drop them at the personal info page
-    - It will respond with the session
-2. Login route  DONE
-    - It will check for the user in the db
-    - If no  user return an error code and an error of no user found
-    - If success return the user's details and the session if none
-3. Edit route 
-    - It will check if the access token is valid 
-        - if not refresh it with the refresh token 
-        - if yes continue with the request and update the users details
-4. Sign out route 
-    - It will check if the session is valid 
-        - if no respond with an error of no user found
-        - if success remove the session and respond with success and user signed out
-        
-*/

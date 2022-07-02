@@ -2,7 +2,7 @@ import styles from './UserInputForm.module.css';
 import avatar from '../../assets/avatar.svg';
 import { IUserDetails } from '../../types';
 import { useRef, useState } from 'react';
-import { useMutation } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import { axiosInstance } from '../../scripts/axiosInstance';
 const UserInputForm = ({ data }: { data: IUserDetails }) => {
   const [formInput, setFormInput] = useState({
@@ -11,7 +11,7 @@ const UserInputForm = ({ data }: { data: IUserDetails }) => {
     phone: data.phone || '',
     email: data.email,
     password: '',
-    picture: '',
+    picture: data.picture || '',
   });
   const [isUrlChecked, setUrlChecked] = useState<boolean>(false);
   const [imageError, setImageError] = useState('');
@@ -20,13 +20,21 @@ const UserInputForm = ({ data }: { data: IUserDetails }) => {
   const urlRef = useRef<HTMLInputElement>(null);
   const imageRefIsImageValid = useRef<HTMLImageElement>(null);
 
-  const mutation = useMutation((data: FormData) => {
-    return axiosInstance.put('/details', data, {
-      headers: {
-        'Content-Type': 'multipart/formdata',
+  const queryClient = useQueryClient();
+  const mutation = useMutation(
+    (data: FormData) => {
+      return axiosInstance.put('/details', data, {
+        headers: {
+          'Content-Type': 'multipart/formdata',
+        },
+      });
+    },
+    {
+      onSuccess(data, variables, context) {
+        queryClient.setQueryData(['userDetails'], data.data);
       },
-    });
-  });
+    }
+  );
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUrlChecked(() => e.target.checked);
@@ -67,18 +75,24 @@ const UserInputForm = ({ data }: { data: IUserDetails }) => {
     e.currentTarget.reportValidity();
     const formdata = new FormData();
 
-    if (!isUrlChecked && fileRef.current?.files) {
-      formdata.append('picture', fileRef.current?.files[0] || '');
+    if (
+      !isUrlChecked &&
+      fileRef.current?.files &&
+      fileRef.current.files.length
+    ) {
+      console.log('file set as picture');
+      formdata.append('picture', fileRef.current.files[0]);
     }
     for (const [key, value] of Object.entries(formInput)) {
       if (!formdata.has(key)) {
+        console.log(key, value);
         formdata.append(key, value);
       }
     }
 
-    for (const [key, value] of formdata.entries()) {
-      console.log(key, value);
-    }
+    // for (const [key, value] of formdata.entries()) {
+    //   console.log(key, value);
+    // }
     mutation.mutate(formdata);
   };
 
@@ -86,7 +100,7 @@ const UserInputForm = ({ data }: { data: IUserDetails }) => {
     <form className={styles.form} onSubmit={handleFormSubmit}>
       <div className={styles.input__file_wrapper}>
         <img
-          src=''
+          src={formInput.picture || avatar}
           alt=''
           width='72px'
           height='72px'

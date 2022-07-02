@@ -77,8 +77,7 @@ export const handleFormData: RequestHandler = async (req, res, next) => {
           await handleNoFile(next, res, req, fields);
           return;
         }
-
-        const { newFilename } = file?.image as File;
+        const { newFilename } = file?.picture as File;
         const fileUrl = new URL(
           `/${newFilename}`,
           `${req.protocol}://${req.get('host')}/uploads`

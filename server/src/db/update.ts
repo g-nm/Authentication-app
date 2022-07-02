@@ -31,9 +31,9 @@ export const UpdateUserDetails = async (
       const updateUserDetailsQuery =
         ' UPDATE user_details SET phone=$1,bio=$2,name=$3,picture=$4 WHERE user_id=$5 RETURNING phone,bio,name,picture';
       const updateValues = [
-        userDetails.phone || 'phone',
-        userDetails.bio || 'bio',
-        userDetails.name || 'name',
+        userDetails.phone,
+        userDetails.bio,
+        userDetails.name,
         userDetails.picture || '',
         userDetails.user_id,
       ];

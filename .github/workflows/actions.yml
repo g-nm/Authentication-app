@@ -2,7 +2,7 @@ name: Github Actions Test
 on:
   push:
     paths:
-      - 'server/'
+      - 'server/*'
 jobs:
   Explore-Github-Actions:
     runs-on: ubuntu-latest

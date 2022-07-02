@@ -144,6 +144,7 @@ app.put(
     try {
       const result = await UpdateUser(res.locals.user);
       console.log('Result of update ', result);
+      res.status(200).json(result);
     } catch (error) {
       console.log('error before response', error);
       if (error instanceof AppError) {
@@ -153,7 +154,7 @@ app.put(
       next(error);
       return;
     }
-    res.status(200).send('Some user details would be updated');
+    // res.status(200).send('Some user details would be updated');
   }
 );
 app.get('/auth', isRequestAuthenticated, (req: Request, res: Response) => {

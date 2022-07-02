@@ -1,5 +1,8 @@
 name: Github Actions Test
-on: [push]
+on:
+  push:
+    paths:
+      - 'server/'
 jobs:
   Explore-Github-Actions:
     runs-on: ubuntu-latest

@@ -20,6 +20,7 @@ export const InsertUser = async (
     }
 
     const hashedPassword = await hashPassword(user.password);
+
     const values: Array<string> = [
       uuidv4(),
       user.email,

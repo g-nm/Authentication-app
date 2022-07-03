@@ -1,0 +1,21 @@
+.label__input_file {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  align-items: center;
+  justify-content: left;
+  gap: 2rem;
+  position: relative;
+}
+.label__input_file:focus-within {
+  outline: 2px solid black;
+}
+.img__preview {
+  border-radius: var(--brSmall);
+  object-fit: cover;
+}
+.input__file {
+  position: absolute;
+  /* visibility: hidden; */
+  width: 0;
+  height: 0;
+}

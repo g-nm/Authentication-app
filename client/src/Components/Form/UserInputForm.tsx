@@ -1,9 +1,10 @@
 import styles from './UserInputForm.module.css';
-import avatar from '../../assets/avatar.svg';
 import { IUserDetails } from '../../types';
 import { useRef, useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
 import { axiosInstance } from '../../scripts/axiosInstance';
+import FileInput from '../FileInput/FileInput';
+import UrlInput from '../UrlInput/UrlInput';
 const UserInputForm = ({ data }: { data: IUserDetails }) => {
   const [formInput, setFormInput] = useState({
     name: data.name || '',
@@ -17,7 +18,7 @@ const UserInputForm = ({ data }: { data: IUserDetails }) => {
   const [imageError, setImageError] = useState('');
   const imageRef = useRef<HTMLImageElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const urlRef = useRef<HTMLInputElement>(null);
+
   const imageRefIsImageValid = useRef<HTMLImageElement>(null);
 
   const queryClient = useQueryClient();
@@ -41,12 +42,11 @@ const UserInputForm = ({ data }: { data: IUserDetails }) => {
     if (!e.target.checked) {
       setImageError('');
     }
-    if (!imageRef.current) return;
-
-    // if (isUrlChecked) URL.revokeObjectURL(imageRef.current.src);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('file input changed');
+
     if (!imageRef.current) return;
     URL.revokeObjectURL(imageRef.current.src);
     if (!e.target.files) return;
@@ -90,74 +90,30 @@ const UserInputForm = ({ data }: { data: IUserDetails }) => {
       }
     }
 
-    // for (const [key, value] of formdata.entries()) {
-    //   console.log(key, value);
-    // }
     mutation.mutate(formdata);
+  };
+  const handleImageError = (error: string) => {
+    setImageError(error);
   };
 
   return (
     <form className={styles.form} onSubmit={handleFormSubmit}>
       <div className={styles.input__file_wrapper}>
-        <img
-          src={formInput.picture || avatar}
-          alt=''
-          width='72px'
-          height='72px'
-          ref={imageRefIsImageValid}
-          onError={(e) => {
-            console.log(e);
-            console.log(formInput.picture);
-            if (!formInput.picture) {
-              setImageError('');
-              return;
-            }
-            setImageError('Invalid image url');
-          }}
-          onLoad={(e) => {
-            setImageError('');
-          }}
-          style={{ display: 'none' }}
-        />
         {!isUrlChecked ? (
-          <label className={styles.label__input_file}>
-            <img
-              src={data.picture || avatar}
-              alt=''
-              width='72px'
-              height='72px'
-              ref={imageRef}
-              className={styles.img__preview}
-            />
-            <span>CHANGE PHOTO</span>
-            <input
-              type='file'
-              name='file'
-              className={styles.input__file}
-              accept='image/*'
-              onChange={handleFileChange}
-              ref={fileRef}
-            />
-          </label>
+          <FileInput
+            data={data}
+            fileRef={fileRef}
+            handleFileChange={handleFileChange}
+            ref={imageRef}
+            key={'file'}
+          />
         ) : (
-          <div>
-            <label>
-              <div>Image Url</div>
-              <input
-                type='url'
-                name='picture'
-                placeholder='https://www.myimage.png'
-                className={styles.input}
-                value={formInput.picture}
-                onChange={handleChange}
-                aria-describedby='urlAlert'
-                ref={urlRef}
-              />
-            </label>
-            <div id='urlAlert' aria-live='assertive' className={styles.alert}>
-              {imageError}
-            </div>
-          </div>
+          <UrlInput
+            handleChange={handleChange}
+            picture={formInput.picture}
+            imageError={imageError}
+            handleImageError={handleImageError}
+          />
         )}
         <label>
           <input

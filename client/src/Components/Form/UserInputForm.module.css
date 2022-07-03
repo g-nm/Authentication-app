@@ -8,17 +8,7 @@
   grid-template-rows: repeat(2, auto);
   gap: 1rem;
 }
-.img__preview {
-  border-radius: var(--brSmall);
-  object-fit: cover;
-}
-.label__input_file {
-  display: grid;
-  grid-template-columns: repeat(2, auto);
-  align-items: center;
-  justify-content: left;
-  gap: 2rem;
-}
+
 .input {
   width: 100%;
   border-radius: var(--br);
@@ -26,9 +16,7 @@
   padding: 1rem;
   font-size: calc(1rem - 3px);
 }
-.input__file {
-  display: none;
-}
+
 .btn {
   background-color: var(--accentColor);
   color: #ffffff;

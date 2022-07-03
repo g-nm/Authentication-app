@@ -15,6 +15,8 @@ import passport from 'passport';
 import { isRequestAuthenticated } from './middleware/AuthMiddleware';
 import { insertUser, selectUserDetails, UpdateUser } from './db/index';
 import { AppError } from './scripts/error';
+import { handleFormData } from './middleware/HandleFiles';
+import { createUploadFolder } from './scripts/upload';
 
 dotenv.config();
 
@@ -56,9 +58,6 @@ app.use(
 );
 
 import './config/passport';
-import { handleFormData } from './middleware/HandleFiles';
-import { createUploadFolder } from './scripts/upload';
-
 app.use(passport.initialize());
 app.use(passport.session());
 app.disable('x-powered-by');
@@ -71,6 +70,8 @@ app.post('/signup', async (req: Request, res: Response, next) => {
   try {
     const result = await insertUser({ email, password });
     req.logIn(result, (err) => {
+      console.log(err);
+
       if (!err) {
         res.sendStatus(201);
         return;

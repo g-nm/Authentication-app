@@ -1,0 +1,35 @@
+
+
+CREATE TABLE user_sessions (
+	sid varchar NOT NULL,
+	sess json NOT NULL,
+	expire timestamp(6) NOT NULL,
+	CONSTRAINT session_pkey PRIMARY KEY (sid)
+);
+CREATE INDEX "IDX_session_expire" ON public.user_sessions USING btree (expire);
+
+
+
+CREATE TABLE users (
+	user_id varchar NOT NULL,
+	email varchar NOT NULL,
+	"password" varchar NOT NULL,
+	created_on timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	last_login timestamp NOT NULL,
+	provider varchar NOT NULL,
+	CONSTRAINT users_pk PRIMARY KEY (user_id),
+	CONSTRAINT users_un_email UNIQUE (email)
+);
+
+
+
+CREATE TABLE user_details (
+	user_id varchar NOT NULL,
+	"name" varchar NULL,
+	bio varchar NULL,
+	phone varchar NULL,
+	picture varchar NULL,
+	details_id serial4 NOT NULL,
+	CONSTRAINT user_details_pk PRIMARY KEY (details_id),
+	CONSTRAINT user_details_fk FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);

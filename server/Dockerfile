@@ -4,8 +4,8 @@ COPY package*.json ./
 RUN npm ci
 COPY . .
 RUN npm run build
+COPY docker.env ./dist/.env
 WORKDIR ./dist/
-COPY docker.env .env
-EXPOSE 8000
+EXPOSE 8080
 CMD ["node","server.js"]
 

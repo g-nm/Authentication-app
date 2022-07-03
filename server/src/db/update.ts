@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import { IUpdateUserDetails, IUserDetails } from '../types/types';
+import { IUpdateUserDetails, IUserDetails, ISignUp } from '../types/types';
 import { hashPassword } from '../scripts/password';
 
 export const UpdateUserDetails = async (
@@ -9,8 +9,15 @@ export const UpdateUserDetails = async (
   console.log('got called', userDetails);
   const client = await pool.connect();
   try {
-    const selectQuery = 'SELECT * FROM user_details where user_id=$1';
-    const result = await pool.query(selectQuery, [userDetails.user_id]);
+    const selectUserDetailsQuery =
+      'SELECT * FROM user_details where user_id=$1';
+    const selectUserQuery =
+      'SELECT email,password,provider FROM users where user_id=$1';
+    const result = await pool.query(selectUserDetailsQuery, [
+      userDetails.user_id,
+    ]);
+    const userResult = await pool.query(selectUserQuery, [userDetails.user_id]);
+    const userCredentials = userResult.rows[0] as ISignUp;
     const user = <IUserDetails[]>result.rows;
     let userResponse: IUpdateUserDetails = userDetails;
     await client.query('BEGIN');
@@ -45,7 +52,7 @@ export const UpdateUserDetails = async (
       'UPDATE users SET email=$1,password=$2 WHERE user_id=$3 RETURNING email';
     const password = userDetails.password
       ? await hashPassword(userDetails.password)
-      : 'password';
+      : userCredentials.password;
     const values = [userDetails.email, password, userDetails.user_id];
 
     const { rows } = await client.query(updateUsersQuery, values);

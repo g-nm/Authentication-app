@@ -16,7 +16,6 @@ const handleNoFile = async (
     throw new AppError('No user session');
   }
   const userFields = fields as Record<keyof IUpdateUserDetails, string>;
-  console.log(userFields);
 
   if (userFields.picture?.length === 0) {
     const userObj: IUpdateUserDetails = {
@@ -88,7 +87,6 @@ export const handleFormData: RequestHandler = async (req, res, next) => {
           user_id: req.user?.user_id,
           picture: fileUrl.href,
         };
-        console.log(userObjWithFileUrl);
 
         res.locals.user = userObjWithFileUrl;
 

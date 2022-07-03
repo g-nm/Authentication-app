@@ -42,6 +42,13 @@ const UserDetails = () => {
                   alt=''
                   width='72px'
                   height='72px'
+                  onError={(e) => {
+                    let count = 0;
+                    if (count === 0) {
+                      e.currentTarget.src = avatar;
+                    }
+                    count = count + 1;
+                  }}
                 />
               </div>
             </div>

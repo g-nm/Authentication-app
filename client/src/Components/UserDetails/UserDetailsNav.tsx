@@ -38,10 +38,15 @@ const UserDetailsNav = () => {
             width='32px'
             height='36px'
             className={styles.btn__image}
+            onError={(e) => {
+              let count = 0;
+              if (count === 0) {
+                e.currentTarget.src = avatar;
+              }
+              count = count + 1;
+            }}
           />
-          <span className={styles.nav__username}>
-            {data?.name || 'George Mwaniki'}
-          </span>
+          <span className={styles.nav__username}>{data?.name || ''}</span>
           <MdOutlineArrowDropDown />
         </button>
         <div

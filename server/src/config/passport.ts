@@ -21,6 +21,7 @@ const strategy = new LocalStrategy(customFields, (username, password, done) => {
         return done(null, false);
       }
       const user = result.rows[0];
+
       verifyPassword(password, user.password).then((isUserValid) => {
         if (isUserValid) {
           return done(null, user);

@@ -19,15 +19,16 @@ import { AppError } from './scripts/error';
 dotenv.config();
 
 const app: Express = express();
-const PORT = process.env.PORT || 8000;
+const PORT = (process.env.PORT as unknown as number) || 8080;
 const storeSession = pgsession(session);
 if (process.env.NODE_ENV === 'development') {
   require('source-map-support').install();
 }
 
+console.log(process.env.CLIENT_URL);
 app.use(
   cors({
-    origin: ['http://localhost:3000', 'https://accounts.google.com/*'],
+    origin: [process.env.CLIENT_URL || ''],
     credentials: true,
   })
 );
@@ -37,6 +38,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   session({
+    name: 'sessionId',
     secret: 'How are you',
     store: new storeSession({
       pool: postgresPool,
@@ -59,6 +61,7 @@ import { createUploadFolder } from './scripts/upload';
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.disable('x-powered-by');
 
 app.get('/', (req: Request, res: Response) => {
   res.send('The server is live');
@@ -178,7 +181,7 @@ const errorHandler: ErrorRequestHandler = (
   next
 ) => {
   if (err instanceof AppError) {
-    res.status(500);
+    res.status(400);
     res.send(err.message);
     return;
   }
@@ -190,7 +193,7 @@ app.use((req: Request, res: Response) => {
   res.status(404).send('Not Found');
 });
 
-app.listen(PORT, async () => {
+app.listen(PORT, '0.0.0.0', async () => {
   await createUploadFolder();
   console.log(`Server is listening on port ${PORT}`);
 });

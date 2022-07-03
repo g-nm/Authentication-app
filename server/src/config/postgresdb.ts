@@ -9,6 +9,9 @@ const postgresPool = new Pool({
   database: process.env.DB_DATABASE,
   password: process.env.DB_PASSWORD,
   max: 20,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 export default postgresPool;

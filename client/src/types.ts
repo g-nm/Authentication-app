@@ -1,4 +1,3 @@
-const { VITE_TEST: server } = import.meta.env;
 export enum Action {
   SIGNUP = 'signup',
   LOGIN = 'login',
@@ -23,9 +22,6 @@ export interface IUserDetails {
   email: string;
 }
 
-export enum ENV {
-  SERVER = server,
-}
 export type LocationState = {
   from: Location;
 };

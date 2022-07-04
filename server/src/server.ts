@@ -26,15 +26,16 @@ const storeSession = pgsession(session);
 if (process.env.NODE_ENV === 'development') {
   require('source-map-support').install();
 }
-app.set('trust proxy', 2);
-console.log(process.env.CLIENT_URL);
+console.log(process.env);
+
+// console.log(process.env.CLIENT_URL);
 app.use(
   cors({
     origin: [process.env.CLIENT_URL || ''],
     credentials: true,
   })
 );
-
+app.set('trust proxy', 1);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
@@ -53,6 +54,7 @@ app.use(
       httpOnly: true,
       sameSite: 'none',
       maxAge: 24 * 60 * 60 * 1000, //1 day
+      // domain: 'https:?//devchallenges-auth-app.vercel.app/',
       secure: true,
     },
   })
@@ -61,13 +63,14 @@ app.use(
 import './config/passport';
 app.use(passport.initialize());
 app.use(passport.session());
-app.disable('x-powered-by');
+// app.disable('x-powered-by');
 
 app.get('/', (req: Request, res: Response) => {
   res.send('The server is live');
 });
 app.post('/signup', async (req: Request, res: Response, next) => {
   const { email, password } = req.body;
+  console.log(req.body);
   try {
     const result = await insertUser({ email, password });
     req.logIn(result, (err) => {

@@ -26,7 +26,7 @@ const storeSession = pgsession(session);
 if (process.env.NODE_ENV === 'development') {
   require('source-map-support').install();
 }
-
+app.set('trust proxy', 2);
 console.log(process.env.CLIENT_URL);
 app.use(
   cors({

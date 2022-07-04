@@ -19,21 +19,25 @@ function App() {
       <AuthServiceProvider>
         <main className='App'>
           <Routes>
-            <Route path='/' element={<Credentials />} />
-            <Route
-              path='/login'
-              element={<Credentials action={Action.LOGIN} key={Action.LOGIN} />}
-            />
-            <Route
-              path='/details'
-              element={
-                <RequireAuth>
-                  <UserDetailsNav />
-                </RequireAuth>
-              }
-            >
-              <Route index element={<UserDetails />} />
-              <Route path='edit' element={<UserDetailsEdit />} />
+            <Route path='/'>
+              <Route index element={<Credentials />} />
+              <Route
+                path='login'
+                element={
+                  <Credentials action={Action.LOGIN} key={Action.LOGIN} />
+                }
+              />
+              <Route
+                path='details'
+                element={
+                  <RequireAuth>
+                    <UserDetailsNav />
+                  </RequireAuth>
+                }
+              >
+                <Route index element={<UserDetails />} />
+                <Route path='edit' element={<UserDetailsEdit />} />
+              </Route>
             </Route>
             <Route path='*' element={<div>You are lost</div>} />
           </Routes>

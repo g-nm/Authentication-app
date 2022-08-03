@@ -38,7 +38,7 @@ app.use(
 let secure = false;
 if (process.env.NODE_ENV === 'PRODUCTION') {
   secure = true;
-  app.set('trust proxy', 1);
+  app.set('trust proxy', 3);
 }
 
 app.use(express.urlencoded({ extended: true }));
@@ -57,7 +57,7 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: 'none',
       secure,
     },
   })

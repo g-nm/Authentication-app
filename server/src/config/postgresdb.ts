@@ -1,15 +1,15 @@
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
+
 dotenv.config({});
 
-const postgresPool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT as unknown as number,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  max: 20,
-  ssl: { rejectUnauthorized: false },
-});
+const connectionString = process.env.DATABASE_URL;
+
+const ssl =
+  process.env.NODE_ENV === 'PRODUCTION'
+    ? { rejectUnauthorized: false }
+    : undefined;
+
+const postgresPool = new Pool({ connectionString, ssl });
 
 export default postgresPool;

@@ -124,7 +124,10 @@ function Credentials({ action = Action.SIGNUP }: { action?: Action }) {
               <button
                 className={styles.social__list_btn}
                 onClick={() => {
-                  window.open('http://localhost:8000/login/google', '_self');
+                  window.open(
+                    `${import.meta.env.VITE_SERVER}/login/google`,
+                    '_self'
+                  );
                 }}
               >
                 <AiOutlineGoogle focusable={false} aria-hidden='true' />

@@ -1,39 +1,41 @@
 import passport from 'passport';
-
 import { IStrategyOptions, Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { verifyPassword } from '../scripts/password';
 import postgresPool from './postgresdb';
 import { insertUserFromProvider } from '../db';
-import { ProviderList } from '../types/types';
+import { IInsertUser, ProviderList } from '../types/types';
 import dotenv from 'dotenv';
+
 dotenv.config({});
 const customFields: IStrategyOptions = {
   usernameField: 'email',
   passwordField: 'password',
 };
 
-const strategy = new LocalStrategy(customFields, (username, password, done) => {
-  postgresPool
-    .query('SELECT * FROM users WHERE email=$1', [username])
-    .then((result) => {
-      if (result.rows.length === 0) {
+const strategy = new LocalStrategy(
+  customFields,
+  async (username, password, done) => {
+    try {
+      const { rows } = await postgresPool.query(
+        'SELECT * FROM users WHERE email=$1',
+        [username]
+      );
+      if (rows.length === 0 || rows.length > 1) {
         return done(null, false);
       }
-      const user = result.rows[0];
+      const user = rows[0] as IInsertUser;
+      const checkPassword = await verifyPassword(password, user.password);
+      if (!checkPassword) {
+        return done(null, false);
+      }
 
-      verifyPassword(password, user.password).then((isUserValid) => {
-        if (isUserValid) {
-          return done(null, user);
-        } else {
-          return done(null, false, { message: 'Incorrect Credentials' });
-        }
-      });
-    })
-    .catch((error) => {
-      done(error);
-    });
-});
+      return done(null, user);
+    } catch (error) {
+      return done(error);
+    }
+  }
+);
 
 const googleStrategy = new GoogleStrategy(
   {

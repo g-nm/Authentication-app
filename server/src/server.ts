@@ -11,6 +11,7 @@ import session from 'express-session';
 import pgsession from 'connect-pg-simple';
 import postgresPool from './config/postgresdb';
 import passport from 'passport';
+import morgan from 'morgan';
 
 import { isRequestAuthenticated } from './middleware/AuthMiddleware';
 import { insertUser, selectUserDetails, UpdateUser } from './db/index';
@@ -23,19 +24,23 @@ dotenv.config();
 const app: Express = express();
 const PORT = (process.env.PORT as unknown as number) || 8080;
 const storeSession = pgsession(session);
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'DEVELOPMENT') {
   require('source-map-support').install();
+  app.use(morgan('tiny'));
 }
-console.log(process.env);
 
-// console.log(process.env.CLIENT_URL);
 app.use(
   cors({
     origin: [process.env.CLIENT_URL || ''],
     credentials: true,
   })
 );
-app.set('trust proxy', 1);
+let secure = false;
+if (process.env.NODE_ENV === 'PRODUCTION') {
+  secure = true;
+  app.set('trust proxy', 1);
+}
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
@@ -52,10 +57,8 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      sameSite: 'none',
-      maxAge: 24 * 60 * 60 * 1000, //1 day
-      // domain: 'https:?//devchallenges-auth-app.vercel.app/',
-      secure: true,
+      sameSite: 'lax',
+      secure,
     },
   })
 );
@@ -68,6 +71,18 @@ app.use(passport.session());
 app.get('/', (req: Request, res: Response) => {
   res.send('The server is live');
 });
+
+app.post(
+  '/login',
+  passport.authenticate('local', {
+    failureRedirect: '/login/failed',
+    failureMessage: true,
+  }),
+  function (req, res) {
+    res.sendStatus(200);
+  }
+);
+
 app.post('/signup', async (req: Request, res: Response, next) => {
   const { email, password } = req.body;
   console.log(req.body);
@@ -96,7 +111,10 @@ app.post('/signup', async (req: Request, res: Response, next) => {
 app.get('/login/failed', (req: Request, res: Response) => {
   res.status(401).send('Incorrect Credentials');
 });
-
+app.get('/login/success', (req: Request, res: Response) => {
+  console.log(req.user);
+  res.status(201).send('Incorrect Credentials');
+});
 app.get(
   '/login/google',
   passport.authenticate('google', {
@@ -110,14 +128,6 @@ app.get(
     failureRedirect: 'login/failed',
     successRedirect: `${process.env.CLIENT_URL}/details`,
   })
-);
-
-app.post(
-  '/login',
-  passport.authenticate('local'),
-  (req: Request, res: Response) => {
-    res.sendStatus(200);
-  }
 );
 app.get(
   '/details',
@@ -162,7 +172,6 @@ app.put(
       next(error);
       return;
     }
-    // res.status(200).send('Some user details would be updated');
   }
 );
 app.get('/auth', isRequestAuthenticated, (req: Request, res: Response) => {

@@ -2,9 +2,8 @@
 import { createContext, useEffect, useState } from 'react';
 import React from 'react';
 import { AuthContextType, IUser } from '../../types';
-import { useMutation } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import { axiosInstance } from '../../scripts/axiosInstance';
-import { AxiosError } from 'axios';
 
 export const AuthContext = createContext<AuthContextType>(null!);
 
@@ -15,6 +14,7 @@ export const AuthServiceProvider = ({
 }) => {
   const [user, setUser] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const queryClient = useQueryClient();
   //   may need to lazy initialize user to set it to user from backend
 
   useEffect(() => {
@@ -87,6 +87,7 @@ export const AuthServiceProvider = ({
     let res: void;
     return signoutMutation.mutate(res, {
       onSuccess() {
+        queryClient.invalidateQueries();
         callback();
       },
     });

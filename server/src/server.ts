@@ -3,6 +3,7 @@ import express, {
   Response,
   Request,
   ErrorRequestHandler,
+  CookieOptions,
 } from 'express';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
@@ -36,8 +37,10 @@ app.use(
   })
 );
 let secure = false;
+let sameSite: CookieOptions['sameSite'] = false;
 if (process.env.NODE_ENV === 'PRODUCTION') {
   secure = true;
+  sameSite = 'none';
   app.set('trust proxy', 3);
 }
 
@@ -57,7 +60,7 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      sameSite: 'none',
+      sameSite,
       secure,
     },
   })

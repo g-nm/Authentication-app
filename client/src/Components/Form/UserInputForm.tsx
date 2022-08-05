@@ -1,7 +1,7 @@
 import styles from './UserInputForm.module.css';
 import { IUserDetails } from '../../types';
 import { useRef, useState } from 'react';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { axiosInstance } from '../../scripts/axiosInstance';
 import FileInput from '../FileInput/FileInput';
 import UrlInput from '../UrlInput/UrlInput';

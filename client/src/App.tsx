@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
 import Credentials from './Components/Credentials/Credentials';
@@ -8,7 +8,7 @@ import UserDetailsNav from './Components/UserDetails/UserDetailsNav';
 import RequireAuth from './Components/RequireAuth/RequireAuth';
 import UserDetails from './Components/UserDetails/UserDetails';
 import UserDetailsEdit from './Components/UserDetails/UserDetailsEdit';
-import { ReactQueryDevtools } from 'react-query/devtools';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const queryClient = new QueryClient();
 

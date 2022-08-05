@@ -2,7 +2,7 @@
 import { createContext, useEffect, useState } from 'react';
 import React from 'react';
 import { AuthContextType, IUser } from '../../types';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { axiosInstance } from '../../scripts/axiosInstance';
 
 export const AuthContext = createContext<AuthContextType>(null!);
@@ -97,7 +97,7 @@ export const AuthServiceProvider = ({
 
   return (
     <AuthContext.Provider value={authState}>
-      {!loading && children}
+      {loading ? 'Loading...' : children}
     </AuthContext.Provider>
   );
 };
